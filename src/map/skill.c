@@ -4457,11 +4457,14 @@ int skill_castend_damage_id(struct block_list* src, struct block_list *bl, uint1
 				struct block_list *mbl = bl;
 				short dir = 0;
 
+				int speed;
+				struct unit_data *ud = unit->bl2ud(src);
+
 				skill->attack(BF_WEAPON,src,src,bl,skill_id,skill_lv,tick,flag);
 
 				if( skill_id == MO_EXTREMITYFIST ) {
 					mbl = src;
-					i = 3; // for Asura(from caster)
+					i = 2; // for Asura(from caster)
 					status->set_sp(src, 0, 0);
 					status_change_end(src, SC_EXPLOSIONSPIRITS, INVALID_TIMER);
 					status_change_end(src, SC_BLADESTOP, INVALID_TIMER);
@@ -4484,23 +4487,25 @@ int skill_castend_damage_id(struct block_list* src, struct block_list *bl, uint1
 				if( dir > 2 && dir < 6 ) y = -i;
 				else if( dir == 7 || dir < 2 ) y = i;
 				else y = 0;
-				if ((mbl == src || (!map_flag_gvg2(src->m) && !map->list[src->m].flag.battleground))) { // only NJ_ISSEN don't have slide effect in GVG
-					if (!(unit->movepos(src, mbl->x+x, mbl->y+y, 1, 1))) {
-						// The cell is not reachable (wall, object, ...), move next to the target
-						if (x > 0) x = -1;
-						else if (x < 0) x = 1;
-						if (y > 0) y = -1;
-						else if (y < 0) y = 1;
-
-						unit->movepos(src, bl->x+x, bl->y+y, 1, 1);
+				if (skill_id == MO_EXTREMITYFIST && unit->walktoxy(src, mbl->x + x, mbl->y + y, 2) && ud) {
+					//Incrase can't walk delay to not alter your walk path
+					ud->canmove_tick = tick;
+					speed = status->get_speed(src);
+					for(i = 0; i < ud->walkpath.path_len; i++) {
+						if(ud->walkpath.path[i]&1)
+							ud->canmove_tick += 7*speed/5;
+						else
+							ud->canmove_tick += speed;
 					}
-					clif->slide(src, src->x, src->y);
-					clif->fixpos(src);
-					clif->spiritball(src);
-				}
+				} else if((mbl == src || (!map_flag_gvg2(src->m) && !map->list[src->m].flag.battleground))
+						&& unit->movepos(src, mbl->x+x, mbl->y+y, 1, 1)) 
+					{
+						clif->slide(src, src->x, src->y);
+						clif->fixpos(src);
+						clif->spiritball(src);
+					}
 			}
 			break;
-
 		case HT_POWER:
 			if( tstatus->race == RC_BRUTE || tstatus->race == RC_INSECT )
 				skill->attack(BF_WEAPON,src,src,bl,skill_id,skill_lv,tick,flag);
@@ -5798,8 +5803,10 @@ int skill_castend_id(int tid, int64 tick, int id, intptr_t data)
 			)
 				sc->data[SC_SOULLINK]->val3 = 0; //Clear bounced spell check.
 
-			if( sc->data[SC_DANCING] && skill->get_inf2(ud->skill_id)&INF2_SONG_DANCE && sd )
-				skill->blockpc_start(sd,BD_ADAPTATION,3000);
+			if( sc->data[SC_DANCING] && skill->get_inf2(ud->skill_id)&INF2_SONG_DANCE && sd ) {
+				//skill->blockpc_start(sd,BD_ADAPTATION,3000); kuma was here
+				skill->blockpc_start(sd,BD_ADAPTATION,100);
+			}
 		}
 
 		if( sd && ud->skill_id != SA_ABRACADABRA && ud->skill_id != WM_RANDOMIZESPELL ) // they just set the data so leave it as it is.[Inkfish]
@@ -8425,14 +8432,78 @@ int skill_castend_nodamage_id(struct block_list *src, struct block_list *bl, uin
 						sc_start(src,bl,SC_INCMATKRATE,100,-50,skill->get_time2(skill_id,skill_lv));
 						break;
 					case 2: // all buffs removed
-						status->change_clear_buffs(bl,1);
+						/** ADDED BY KUMA **/
+						{
+							int splash;
+							if (flag&1 || (splash = skill->get_splash(skill_id, skill_lv)) < 1) {
+								int i;
+								if( sd && dstsd && !map_flag_vs(sd->bl.m)
+									&& (sd->status.party_id == 0 || sd->status.party_id != dstsd->status.party_id) ) {
+									// Outside PvP it should only affect party members and no skill fail message.
+									break;
+								}
+								clif->skill_nodamage(src,bl,skill_id,skill_lv,1);
+								if ((dstsd != NULL && (dstsd->job & MAPID_UPPERMASK) == MAPID_SOUL_LINKER)
+									|| (tsc && tsc->data[SC_SOULLINK] && tsc->data[SC_SOULLINK]->val2 == SL_ROGUE) //Rogue's spirit defends against dispel.
+									|| (dstsd && pc_ismadogear(dstsd))
+									|| rnd()%100 >= 50+10*skill_lv )
+								{
+									if (sd)
+										clif->skill_fail(sd,skill_id,USESKILL_FAIL_LEVEL,0);
+									break;
+								}
+								if(status->isimmune(bl) || !tsc || !tsc->count)
+									break;
+								for(i = 0; i < SC_MAX; i++) {
+									if ( !tsc->data[i] )
+											continue;
+									if( SC_COMMON_MAX < i ) {
+										if ( status->get_sc_type(i)&SC_NO_DISPELL )
+											continue;
+									}
+									switch (i) {
+										/**
+										 * bugreport:4888 these songs may only be dispelled if you're not in their song area anymore
+										 **/
+										case SC_WHISTLE:
+										case SC_ASSNCROS:
+										case SC_POEMBRAGI:
+										case SC_APPLEIDUN:
+										case SC_HUMMING:
+										case SC_DONTFORGETME:
+										case SC_FORTUNE:
+										case SC_SERVICEFORYOU:
+											if( tsc->data[i]->val4 ) //val4 = out-of-song-area
+												continue;
+											break;
+										case SC_ASSUMPTIO:
+											if( bl->type == BL_MOB )
+												continue;
+											break;
+										case SC_BERSERK:
+										case SC_SATURDAY_NIGHT_FEVER:
+											tsc->data[i]->val2=0;  //Mark a dispelled berserk to avoid setting hp to 100 by setting hp penalty to 0.
+											break;
+									}
+									status_change_end(bl, (sc_type)i, INVALID_TIMER);
+								}
+								break;
+							} else {
+								//Affect all targets on splash area.
+								map->foreachinrange(skill->area_sub, bl, splash, BL_CHAR,
+													src, skill_id, skill_lv, tick, flag|1,
+													skill->castend_damage_id);
+							}
+						} 
+						/** ADDED BY KUMA **/
+						//status->change_clear_buffs(bl,1); removed by kuma
 						break;
 					case 3: // 1000 damage, random armor destroyed
 						{
 							status_fix_damage(src, bl, 1000, 0);
 							clif->damage(src,bl,0,0,1000,0,BDT_NORMAL,0);
 							if( !status->isdead(bl) ) {
-								int where[] = { EQP_ARMOR, EQP_SHIELD, EQP_HELM, EQP_SHOES, EQP_GARMENT };
+								int where[] = { EQP_ARMOR, EQP_SHIELD, EQP_HELM};
 								skill->break_equip(bl, where[rnd() % ARRAYLENGTH(where)], 10000, BCT_ENEMY);
 							}
 						}
@@ -8452,10 +8523,10 @@ int skill_castend_nodamage_id(struct block_list *src, struct block_list *bl, uin
 							count++; //Should not re-trigger this one.
 						break;
 					case 7: // stop freeze or stoned
-						{
+						/*{
 							enum sc_type sc[] = { SC_STOP, SC_FREEZE, SC_STONE };
 							sc_start(src,bl,sc[rnd() % ARRAYLENGTH(sc)],100,skill_lv,skill->get_time2(skill_id,skill_lv));
-						}
+						}*/
 						break;
 					case 8: // curse coma and poison
 						sc_start(src,bl,SC_COMA,100,skill_lv,skill->get_time2(skill_id,skill_lv));
@@ -10405,8 +10476,31 @@ int skill_castend_nodamage_id(struct block_list *src, struct block_list *bl, uin
 			} else if( sd )
 				clif->skill_fail(sd, skill_id, USESKILL_FAIL_LEVEL, 0);
 			break;
-
+		case WZ_NETHERSWAP:
+			if ( map_flag_gvg2(src->m) || (( dstsd || dstmd ) && !(tstatus->mode&MD_PLANT))) {
+				int x = src->x, y = src->y;
+				int x2 = bl->x, y2 = bl->y;
+				
+				if (unit->movepos(src, x2, y2, 0, 0) && unit->movepos(bl, x, y, 0, 0)) {
+					clif->skill_nodamage(src, src, skill_id, skill_lv, 1);
+					clif->slide(src, x2, y2);
+					clif->slide(bl, x, y);
+				}
+			}
+			break;
 		case KO_GENWAKU:
+			if ( map_flag_gvg2(src->m) || (( dstsd || dstmd ) && !(tstatus->mode&MD_PLANT))) {
+				int x = src->x, y = src->y;
+				int x2 = bl->x, y2 = bl->y;
+				
+				if (unit->movepos(src, x2, y2, 0, 0) && unit->movepos(bl, x, y, 0, 0)) {
+					clif->skill_nodamage(src, src, skill_id, skill_lv, 1);
+					clif->slide(src, x2, y2);
+					clif->slide(bl, x, y);
+				}
+			}
+			break;
+			/*
 			if ( !map_flag_gvg2(src->m) && ( dstsd || dstmd ) && !(tstatus->mode&MD_PLANT) && battle->check_target(src,bl,BCT_ENEMY) > 0 ) {
 				int x = src->x, y = src->y;
 				if( sd && rnd()%100 > max(5, (45 + 5 * skill_lv) - status_get_int(bl) / 10) ){//[(Base chance of success) - ( target's int / 10)]%.
@@ -10427,6 +10521,7 @@ int skill_castend_nodamage_id(struct block_list *src, struct block_list *bl, uin
 				}
 			}
 			break;
+			*/
 
 		case OB_AKAITSUKI:
 		case OB_OBOROGENSOU:
@@ -11340,7 +11435,26 @@ int skill_castend_pos2(struct block_list* src, int x, int y, uint16 skill_id, ui
 				}
 			}
 			break;
+		/** ADDED BY KUMA **/
+		case NPC_AUTOATTACK:
+			{
+				int summons[4] = { 1661, 1643, 1640, 1644 };
+				int class_ = summons[skill_lv-1];
+				struct mob_data *md;
+				// Correct info, don't change any of this! [celest]
+				md = mob->once_spawn_sub(src, src->m, x, y, clif->get_bl_name(src), class_, "", SZ_SMALL, AI_NONE);
+				if (md) {
+					md->master_id = src->id;
+					md->special_state.ai = AI_FLORA;
+					if( md->deletetimer != INVALID_TIMER )
+						timer->delete(md->deletetimer, mob->timer_delete);
+					md->deletetimer = timer->add(timer->gettick() + skill->get_time(skill_id,skill_lv), mob->timer_delete, md->bl.id, 0);
+					mob->spawn (md); //Now it is ready for spawning.
 
+				}
+			}
+			break;
+		/** ADDED BY KUMA **/
 		// Slim Pitcher [Celest]
 		case CR_SLIMPITCHER:
 			if (sd) {
@@ -15001,6 +15115,25 @@ int skill_check_condition_castend(struct map_session_data* sd, uint16 skill_id, 
 			}
 			break;
 		}
+		/** ADDED BY KUMA **/
+		case NPC_AUTOATTACK:
+		{
+			int c=0;
+			int summons[4] = { 1661, 1643, 1640, 1644 };
+			int maxcount = 6;
+			int mob_class = summons[skill_lv-1];
+			if(battle_config.land_skill_limit && maxcount>0 && (battle_config.land_skill_limit&BL_PC)) {
+				i = map->foreachinmap(skill->check_condition_mob_master_sub ,sd->bl.m, BL_MOB, sd->bl.id, mob_class, skill_id, &c);
+				if(c >= maxcount ||
+					(skill_id==NPC_AUTOATTACK && c != i && battle_config.summon_flora&2))	
+				{	//Fails when: exceed max limit. There are other plant types already out.
+					clif->skill_fail(sd,skill_id,USESKILL_FAIL_LEVEL,0);
+					return false;
+				}
+			}
+			break;
+		}
+		/** ADDED BY KUMA **/
 		case NC_SILVERSNIPER:
 		case NC_MAGICDECOY: {
 				int c = 0;

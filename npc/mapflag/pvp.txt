@@ -34,6 +34,34 @@
 //=========================================================================
 
 // PvP ========================
+izlude	mapflag	pvp
+morocc	mapflag	pvp
+pay_arche	mapflag	pvp
+moc_ruins	mapflag	pvp
+geffen	mapflag	pvp
+pay_arche	mapflag	pvp
+alberta	mapflag	pvp
+aldebaran	mapflag	pvp
+yuno	mapflag	pvp
+lighthalzen	mapflag	pvp
+einbroch	mapflag	pvp
+einbech	mapflag	pvp
+comodo	mapflag	pvp
+umbala	mapflag	pvp
+amatsu	mapflag	pvp
+gonryun	mapflag	pvp
+ayothaya	mapflag	pvp
+louyang	mapflag	pvp
+hugel	mapflag	pvp
+rachel	mapflag	pvp
+veins	mapflag	pvp
+brasilis	mapflag	pvp
+dicastes01	mapflag	pvp
+mora	mapflag	pvp
+dewata	mapflag	pvp
+malangdo	mapflag	pvp
+malaya	mapflag	town
+eclage	mapflag	town
 pvp_y_1-1	mapflag	pvp
 pvp_y_1-2	mapflag	pvp
 pvp_y_1-3	mapflag	pvp

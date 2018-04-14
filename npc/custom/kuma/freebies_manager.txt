@@ -1,0 +1,139 @@
+prontera,147,167,6	script	Century RO Freebies	403,{
+
+	if(#freebies == 1 && getgmlevel()<99) goto F_1;
+	mes "[Freebies]"; 
+	mes "Greetings! Welcome to Century Ragnarok Online...";
+	mes "I can provide you a one-time";
+	mes "freebie set and instant boost. So";
+	mes "you better choose your hero wisely";
+	next;
+	mes "[Freebies]";
+	mes "Please select your desired class for your character";
+	switch(select("Lord Knight:High Priest:High Wizard:Whitesmith:Sniper:Assassin Cross:Paladin:Champion:Professor:Stalker:Creator:Clown:Ninja:Taekwon Master:Soul Linker:Gunslinger")) {
+		case 1: //Lord Knight
+			set .@job, 4008;
+			set .@job$, "Lord Knight";
+			break;
+		case 2: //High Priest
+			set .@job, 4009;
+			set .@job$, "High Priest";
+			break;
+		case 3: //High Wizard
+			set .@job, 4010;
+			set .@job$, "High Wizard";
+			break;
+		case 4: //Whitesmith
+			set .@job, 4011;
+			set .@job$, "Whitesmith";
+			break;
+		case 5: //Sniper
+			set .@job, 4012;
+			set .@job$, "Sniper";
+			break;
+		case 6: //Assassin Cross
+			set .@job, 4013;
+			set .@job$, "Assassin Cross";
+			break;
+		case 7: //Paladin
+			set .@job, 4015;
+			set .@job$, "Paladin";
+			break;
+		case 8: //Champion
+			set .@job, 4016;
+			set .@job$, "Champion";
+			break;
+		case 9: //Professor
+			set .@job$, "Professor";
+			break;
+		case 10: //Stalker
+			set .@job, 4018;
+			set .@job$, "Stalker";
+			break;
+		case 11: //Creator
+			set .@job, 4019;
+			set .@job$, "Creator";
+			break;
+		case 12: //Clown
+			set .@job, 4020;
+			set .@job$, "Clown/Gypsy";
+			break;
+		case 13: //Ninja
+			set .@job, 25;
+			set .@job$, "Ninja";
+			break;
+		case 14: //Taekwon Master
+			set .@job, 4047;
+			set .@job$, "Star Gladiator";
+			break;
+		case 15: //Soul Linker
+			set .@job, 4049;
+			set .@job$, "Soul Linker";
+			break;
+		case 16: //Gunslinger
+			set .@job, 24;
+			set .@job$, "Gunslinger";
+			break;
+	}
+	next;
+	mes "[Freebies]";
+	mes "Please select your one god item for your character";
+	switch(select("Lord Kaho's Horn:Sleipnir:Asprika:Megingjard:Brisingamen:Brynhildr:Foot Ring")) {
+		case 1:
+			set .@item, 5013;
+			break; 
+		case 2:
+			set .@item, 2410;
+			break; 
+		case 3:
+			set .@item, 2541;
+			break; 
+		case 4:
+			set .@item, 2629;
+			break; 
+		case 5:
+			set .@item, 2630;
+			break; 
+		case 6:
+			set .@item, 2383;
+			break; 
+		case 7:
+			set .@item, 2737; 
+	} 
+	next;
+	mes "Job Class: ^ff0000" + .@job$ + "^000000";
+	mes "God Item: ^ff0000" + getitemname(.@item) + "^000000";
+	mes "Do you want to proceed with your choices?";
+	if(select("Yes:No") == 1) {
+		getitembound .@item, 1, 1;
+		jobchange(.@job);
+		statusup2(bStr, 300);
+		statusup2(bAgi, 300);
+		statusup2(bVit, 300);
+		statusup2(bInt, 300);
+		statusup2(bDex, 300);
+		statusup2(bLuk, 300);
+		set StatusPoint, 0;
+		set BaseLevel, 255;
+		set JobLevel, 120;
+		atcommand("@allskill");		
+		emotion e_thx;
+		set #freebies,1;
+	}
+
+	 /** Edit Freebies Items Here **/
+
+
+	 /** Edit Freebies Items Here **/
+	close;
+
+OnInit:
+waitingroom "Freebies NPC",0;
+end;
+
+F_1:
+mes "[Freebies]";
+mes "Enjoy Playing VRO !";
+emotion e_bzz;
+close;
+
+}

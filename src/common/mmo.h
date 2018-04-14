@@ -142,15 +142,17 @@
 #define MAX_BANK_ZENY INT_MAX
 
 #ifndef MAX_LEVEL
-#define MAX_LEVEL 175
+#define MAX_LEVEL 255
 #endif
 #define MAX_FAME 1000000000
 #define MAX_CART 100
 #ifndef MAX_SKILL_DB
-#define MAX_SKILL_DB 1510 ///< Maximum number of skills in the skill DB (compacted array size)
+//#define MAX_SKILL_DB 1510 ///< Maximum number of skills in the skill DB (compacted array size) 
+#define MAX_SKILL_DB 1710 //kuma
 #endif
 #ifndef MAX_SKILL_ID
-#define MAX_SKILL_ID 10015   // [Ind/Hercules] max used skill ID
+//#define MAX_SKILL_ID 10015   // [Ind/Hercules] max used skill ID
+#define MAX_SKILL_ID 11000
 #endif
 #ifndef MAX_SKILL_TREE
 // Update this max as necessary. 86 is the value needed for Expanded Super Novice.

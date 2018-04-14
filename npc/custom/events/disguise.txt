@@ -10,7 +10,7 @@
 //= 5.1 Cleaned and standardized, mostly. [Euphy]
 //============================================================
 
-prontera,160,155,4	script	Disguise Event	4_M_NFDEADMAN,{
+prontera,156,156,4	script	Disguise Event	4_M_NFDEADMAN,{
 
 	// Currently set to run every two hours.
 	// To change times, edit the OnClock labels below.
@@ -124,7 +124,7 @@ OnInit:
 	set .Winner,0;
 	set .ResetCounter,0;
 	set .Rounds,10;
-	set .Prize,512;
+	set .Prize,7608;
 	set .PrizeAmt,1;
 	set .Rule,1;
 	setarray .MVP[0], OSIRIS, BAPHOMET, DOPPELGANGER, MISTRESS, GOLDEN_BUG, ORK_HERO, DRAKE, EDDGA, MAYA, MOONLIGHT,

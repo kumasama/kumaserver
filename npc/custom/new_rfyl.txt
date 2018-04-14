@@ -1,0 +1,188 @@
+-	script	new_rfyl	FAKE_NPC,{
+OnInit:
+	bindatcmd "rfyl",strnpcinfo(3)+"::OnAtcommand";
+	disablenpc "RFYL Warper";
+	end;
+
+OnAtcommand:
+	if(getgroupid() < 40) {
+		message strcharinfo(0),"@event is an unknown command.";
+		end;
+	}
+	mes "[RFYL NPC]";
+	mes "Hello there " + strcharinfo(0) + " !";
+	mes "Do you want to start RFYL Event?";
+	next;
+	menu "Start RFYL Event",start_event, "Maybe next time.",-;
+	mes "Okay";
+	close2;
+	end;
+
+start_event:	
+	mes "I will now create warps, announce, & warp you.";				
+	close2;	
+	warp "quiz_01",229,376;
+	announce "RFYL Manager: There will be a 'Run For Your Life' Event Held!",bc_all;							
+	sleep2 2500;				
+	announce "RFYL Manager: If you want to join, the warp will be open in Prontera. It will be open for 2 minutes!",bc_all;				
+	sleep2 5000;				
+	goto L_Timer;
+	end;
+
+L_Timer:
+	enablenpc "RFYL Warper";
+	announce "RFYL Manager: Warp is now open!",bc_all;		
+	sleep2 60000;
+	announce "RFYL Manager: You have only 1 minute left to join the event!",bc_all;	
+	sleep2 30000;
+	announce "RFYL Manager: 30 Seconds left to join the event!!",bc_all;		
+	sleep2 5000;		
+	announce "RFYL Manager: Hurry to Prontera if you want to join!",bc_all;	
+    sleep2 5000;	
+	announce "RFYL Manager: Twenty seconds left!",bc_all;	
+    sleep2 10000;	
+	announce "RFYL Manager: Ten seconds left!",bc_all;
+	sleep2 5000;
+	announce "RFYL Manager: 5!",bc_all;		
+	sleep2 1000;		
+	announce "RFYL Manager: 4!",bc_all;		
+	sleep2 1000;		
+	announce "RFYL Manager: 3!",bc_all;		
+	sleep2 1000;		
+	announce "RFYL Manager: 2!",bc_all;		
+	sleep2 1000;		
+	announce "RFYL Manager: 1!",bc_all;		
+	sleep2 1000;		
+	announce "RFYL Manager: The warp is now closed!",bc_all;		
+	sleep2 1000;		
+	disablenpc "RFYL Warper";			
+	end;
+}
+
+prontera,155,170,6	script	RFYL Warper	4_F_VALKYRIE,{
+	if (gethominfo(2) != "null"){				
+		mes "No homunculus is allowed in this event! Sorry "+strcharinfo(0)+" but you can't join this event!";				
+		close;			
+	}	
+			
+	if (getpetinfo(2) != "null"){				
+		mes "No pet is allowed in this event! Sorry "+strcharinfo(0)+" but you can't join this event!";				
+		close;	
+	}	
+			
+	if (checkcart()){			
+		mes "[ Run For Your Life Event ]";				
+		mes "No cart is allowed! Sorry "+strcharinfo(0)+" but you can't join this event!";				
+		close;			
+	}		
+		
+	if (checkfalcon()){	
+		mes "No falcon is allowed! Sorry "+strcharinfo(0)+" but you can't join this event!";				
+		close;		
+	}			
+
+	if (checkmount()){			
+		mes "No riding is allowed! Sorry "+strcharinfo(0)+" but you can't join this event!";				
+		close;			
+	}			
+	warp "quiz_01",230,368;	
+}
+
+quiz_01,232,377,6	script	RFYL Manager	4_M_HUMAN_02,{
+	if(getgmlevel() < 20 ) end;
+	attachnpctimer;
+	mes "[RFYL Manager]";
+	mes "What do you want to do?";
+	switch(select("Add more clones:Kill all clones:^0000FFStart Event^000000:^FF0000End Event^000000")) {
+		case 1:
+			next;
+			if($@RFYL == 0) {
+				mes "[RFYL Manager]";
+				mes "You need to start the event first.";
+				close;
+				end;
+			}
+			mes "[RFYL Manager]";
+			mes "How many clones do you want to add?";
+			input $@amount;
+			announce strcharinfo(0) + ": " + "Adding more clones",bc_map;
+			initnpctimer;
+			break;
+		case 2:
+			if($@RFYL == 0) {
+				next;
+				mes "[RFYL Manager]";
+				mes "You need to start the event first.";
+				close;
+				end;
+			}
+			killmonsterall "quiz_01";
+			sleep2 200;
+			atcommand "@cleanmap";
+			break;
+		case 3:
+			next;
+			if($@RFYL == 1) {
+				mes "[RFYL Manager]";
+				mes "The event has already started.";
+				close;
+				end;
+			}
+			set $@RFYL, 1;
+			mes "[RFYL Manager]";
+			mes "How many clones do you want to summon first?";
+			mes "1 is the Minimum, 5 is the Maximum.";
+			do {
+				input $@amount;
+			}while($@amount < 1  || $@amount > 5);
+			announce strcharinfo(0) + ": The RFYL Event will start now.",bc_map;
+			sleep2 2000;
+			atcommand "@doommap";
+			sleep2 100;
+			atcommand "@raisemap";
+			atcommand "@gvgon";
+			initnpctimer;
+			break;
+		case 4:
+			if($@RFYL == 0) {
+				next;
+				mes "[RFYL Manager]";
+				mes "You can't end the event because it hasn't started yet.";
+				close;
+				end;
+			}
+			set $@RFYL, 0;
+			atcommand "@gvgoff";
+	}
+	close;
+OnInit:
+	set $@RFYL, 0;
+OnMobKilled:
+	end;
+OnTimer2000:
+	if($@amount > 1)
+		set $@cloneQty$, $@amount + " clones ";
+	else
+		set $@cloneQty$, $@amount + " clone ";
+	announce strcharinfo(0) + ": " + "Summoning " + $@cloneQty$ + "in the middle in...",bc_map;
+	end;
+OnTimer3000:
+	announce strcharinfo(0) + ": " + "5!",bc_map;
+	end;
+OnTimer4000:
+	announce strcharinfo(0) + ": " + "4!",bc_map;
+	end;
+OnTimer5000:
+	announce strcharinfo(0) + ": " + "3!",bc_map;
+	end;
+OnTimer6000:
+	announce strcharinfo(0) + ": " + "2!",bc_map;
+	end;
+OnTimer7000:
+	announce strcharinfo(0) + ": " + "1!",bc_map;	
+	for(set .@i, 0; .@i<$@amount; .@i++) {
+				clone "quiz_01",230,368,"::OnMobKilled",getcharid(0,strcharinfo(0));
+	}
+	detachnpctimer;
+	end;
+}

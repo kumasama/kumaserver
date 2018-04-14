@@ -1,0 +1,7 @@
+prontera,138,183,6	script	Dr. Kody	4W_M_03,{
+
+	mes "Good-day,";
+	mes "I can help you with what most others can't, change your gender.";
+	mes "Want to do it? You'll feel like a whole new person!";
+	close;
+}

@@ -1,0 +1,84 @@
+//Scripted by Kumarino
+
+prontera,168,193,4	script	Mystogan	4_M_MASK,{
+	
+	if(BaseLevel < 254 || JobLevel < 120) {
+		mes "Come back when you're strong enough to change classes";
+		close;
+	}
+	mes "[Mystogan]";
+	mes "I am Mystogan! I came from the world of Edolas. I can change your job class for " + .Price[1] + " " + getitemname(.Price[0]);
+	next;
+	mes "[Mystogan]";
+	mes "Would you like to change classes?";
+	if(select("No:Yes") == 1)
+		close;
+	next;
+	mes "[Mystogan]";
+	if(countitem(.Price[0]) < .Price[1]) {
+		mes "Get lost you fucker or come back when you have enough " + getitemname(.Price[0]);
+		close; 
+	}
+	mes "Please choose your desired job.";
+	switch(select("Lord Knight:High Priest:High Wizard:Whitesmith:Sniper:Assassin Cross:Paladin:Champion:Professor:Stalker:Creator:Clown:Ninja:Taekwon Master:Soul Linker:Gunslinger")) {
+		case 1: //Lord Knight
+			jobchange(4008);
+			break;
+		case 2: //High Priest
+			jobchange(4009);
+			break;
+		case 3: //High Wizard
+			jobchange(4010);
+			break;
+		case 4: //Whitesmith
+			jobchange(4011);
+			break;
+		case 5: //Sniper
+			jobchange(4012);
+			break;
+		case 6: //Assassin Cross
+			jobchange(4013);
+			break;
+		case 7: //Paladin
+			jobchange(4015);
+			break;
+		case 8: //Champion
+			jobchange(4016);
+			break;
+		case 9: //Professor
+			jobchange(4017);
+			break;
+		case 10: //Stalker
+			jobchange(4018);
+			break;
+		case 11: //Creator
+			jobchange(4019);
+			break;
+		case 12: //Clown
+			jobchange(4020);
+			break;
+		case 13: //Ninja
+			jobchange(25);
+			break;
+		case 14: //Taekwon Master
+			jobchange(4047);
+			break;
+		case 15: //Soul Linker
+			jobchange(4049);
+			break;
+		case 16: //Gunslinger
+			jobchange(24);
+			break;
+	}
+	delitem .Price[0], .Price[1];
+	set JobLevel, 120;
+	next;
+	mes "[Mystogan]";
+	mes "Thank you for using my service.";
+	set JobLevel, 120;
+	close;
+	
+	OnInit:
+		setarray .Price[0],7227,1;
+		end;
+}

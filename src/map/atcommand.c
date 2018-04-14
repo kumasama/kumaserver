@@ -1898,7 +1898,7 @@ ACMD(go) {
 		{ MAP_NIFLHEIM,     21, 153, 3 }, // 13 = Niflheim
 		{ MAP_LOUYANG,     217,  40, 3 }, // 14 = Luoyang
 		{ MAP_NOVICE,       53, 111, 3 }, // 15 = Training Grounds
-		{ MAP_JAIL,         23,  61, 3 }, // 16 = Prison
+		{ MAP_PAY_ARCHE,         43,  127, 3 }, // 16 = Prison
 		{ MAP_JAWAII,      249, 127, 3 }, // 17 = Jawaii
 		{ MAP_AYOTHAYA,    151, 117, 3 }, // 18 = Ayothaya
 		{ MAP_EINBROCH,     64, 200, 5 }, // 19 = Einbroch
@@ -1972,8 +1972,7 @@ ACMD(go) {
 		} else if (strncmpi(map_name, "startpoint", 3) == 0 // Easy to remember alternatives to 'new_1-1'
 		        || strncmpi(map_name, "beginning", 3) == 0) {
 			town = 15;
-		} else if (strncmpi(map_name, "prison", 3) == 0 // Easy to remember alternatives to 'sec_pri'
-		        || strncmpi(map_name, "jail", 3) == 0) {
+		} else if (strncmpi(map_name, "pay_arche", 3) == 0) { // Easy to remember alternatives to 'sec_pri'
 			town = 16;
 		} else if (strncmpi(map_name, "rael", 3) == 0) { // Original town name for 'rachel'
 			town = 23;

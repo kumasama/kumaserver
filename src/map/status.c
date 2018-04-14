@@ -7163,18 +7163,27 @@ int status_get_sc_def(struct block_list *src, struct block_list *bl, enum sc_typ
 		tick_def = 0; //No duration reduction
 		break;
 	case SC_FREEZE:
+		/** REMOVED BY KUMA
 		sc_def = st->mdef*100;
 		sc_def2 = st->luk*10 + SCDEF_LVL_DIFF(bl, src, 99, 10);
 		tick_def2 = status_get_luk(src) * -10; //Caster can increase final duration with luk
+		REMOVED BY KUMA **/
+		sc_def = st->mdef*100;		
+		sc_def2 = st->luk*10 + SCDEF_LVL_DIFF(bl, src, 99, 10);		
+		tick_def = st->luk*34;
 		break;
 	case SC_CURSE:
 		// Special property: immunity when luk is zero
+		/* REMOVED BY KUMA
 		if (st->luk == 0)
 			return 0;
 		sc_def = st->luk*100;
 		sc_def2 = st->luk*10 + SCDEF_LVL_DIFF(NULL, src, 99, 10); // Curse only has a level penalty and no resistance
 		tick_def = st->vit*100;
-		tick_def2 = st->luk*10;
+		tick_def2 = st->luk*10; REMOVED BY KUMA */
+		sc_def = st->mdef*100;		
+		sc_def2 = st->luk*10 + SCDEF_LVL_DIFF(bl, src, 99, 10);		
+		tick_def = st->luk*35;
 		break;
 	case SC_BLIND:
 		sc_def = (st->vit + st->int_)*50;

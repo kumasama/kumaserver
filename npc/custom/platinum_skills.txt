@@ -29,6 +29,8 @@ prontera,128,200,6	script	Platinum Skill NPC	4_F_MAID,{
 		close;
 	}
 	skill 142,1,0;
+	if(Class == 4010) skill 10020,1,0;
+	if(Class == 4009) skill 10021,4,0;
 	switch(BaseClass) {
 		case 0: if (Class !=23) skill 143,1,0; break;
 		case 1: skill 144,1,0; skill 145,1,0; skill 146,1,0; break;

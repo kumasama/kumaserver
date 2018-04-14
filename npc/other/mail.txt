@@ -83,7 +83,6 @@ geffen,199,125,0	duplicate(MailBox)	Mailbox#2gef	2_POSTBOX
 //== Payon =================================================
 payon,191,104,0	duplicate(MailBox)	Mailbox#pay	2_POSTBOX
 payon,171,226,0	duplicate(MailBox)	Mailbox#2pay	2_POSTBOX
-pay_arche,55,127,0	duplicate(MailBox)	Mailbox#3pay	2_POSTBOX
 
 //== Alberta ===============================================
 alberta,90,60,0	duplicate(MailBox)	Mailbox#alb	2_POSTBOX

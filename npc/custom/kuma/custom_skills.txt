@@ -1,0 +1,10 @@
+-	script	custom_skills	FAKE_NPC,{
+
+	OnPCLoginEvent:
+		if(Class == 4010) skill 10020,1,0;
+		if(Class == 4009) { 
+			addtoskill(10021,1,0);
+		}
+		end;
+	
+}

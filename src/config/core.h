@@ -84,7 +84,7 @@
 /// Uncomment to switch the way map zones' "skill_damage_cap" functions.
 /// When commented the cap takes place before modifiers, as to have them be useful.
 /// When uncommented the cap takes place after modifiers.
-//#define HMAP_ZONE_DAMAGE_CAP_TYPE
+#define HMAP_ZONE_DAMAGE_CAP_TYPE
 
 /// Comment to disable Guild/Party Bound item system
 #define GP_BOUND_ITEMS

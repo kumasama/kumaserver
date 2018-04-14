@@ -1,0 +1,81 @@
+prontera,140,181,6	script	Linda	4_F_KAFRA7,{
+	
+	// ----------------------
+	// - Core Code
+	// ----------------------
+	
+	cutin "kafra_07",2;
+	mes "[" + .colors$[1] + .npc_name$ + .colors$[0] + "]";
+	mes "Hello! My name is Linda, I work for the Kafra Services and my job is to sell status points & skill points.";
+	mes "1 Skill Point = "  +  .skill_cost;
+	mes "1 Status Point = " + .stat_cost;
+	mes "What would you like to do today?";
+	next;
+	set .@trade_type, select("Buy Status Points:Buy Skill Points:Nothing");
+	next;
+	mes "[" + .colors$[1] + .npc_name$ + .colors$[0] + "]";
+	
+	switch(.@trade_type) {
+		case 1: //Buy Status Points
+			mes "How many status points would you like to buy?";
+			input .@amount;
+			if (.@amount <= 0) { // Invalid Number?
+				mes .colors$[2] + "Please Input a number greater than 0:";
+				cutin "",255;
+				close;
+			} 
+			else { 
+    
+				if(Zeny < .@amount * .stat_cost) goto N_Zeny;
+				set Zeny, Zeny - (.@amount * .stat_cost);
+				set StatusPoint, StatusPoint + .@amount;
+				next;
+				
+			}
+			break;
+			
+		case 2: //Buy Skill Points
+			mes "How many skill points would you like to buy?";
+			input .@amount;
+			if (.@amount <= 0) { // Invalid Number?
+				mes .colors$[2] + "Please Input a number greater than 0:";
+				cutin "",255;
+				close;
+			} 
+			else { 
+    
+				if(Zeny < .@amount * .skill_cost) goto N_Zeny;
+				set Zeny, Zeny - (.@amount * .skill_cost);
+				set SkillPoint, SkillPoint+ .@amount;
+				next;
+				
+			}
+			break;
+			
+		case 3:
+			close;
+		}
+		mes "[" + .colors$[1] + .npc_name$ + .colors$[0] + "]";
+		mes "Pleasure doing business with you.";
+		cutin "", 255;
+		close;
+		end;
+
+
+		N_Zeny:
+                        next;
+                        mes "[" + .colors$[1] + .npc_name$ + .colors$[0] + "]";
+                        mes "Sorry, you don't have enough zeny to buy points!";
+                        close;
+
+			// ----------------------
+			// - Soft Code / Configurations
+			// ----------------------	
+			
+                  OnInit:
+			// Store NPC Name
+			set .npc_name$, "Linda";
+			setarray .colors$[0],"^000000", "^336699", "^550000", "^996633", "^666666", "^FFFF66", "^99CCCC";
+			set .stat_cost, 1000;
+			set .skill_cost, 10000;
+}

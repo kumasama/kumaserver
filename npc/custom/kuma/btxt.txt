@@ -1,0 +1,76 @@
+//BERRY EXCHANGER
+
+-	script	Exchanger	-1,{
+
+	mes "[Berry Exchanger]";
+	mes "I can convert your Berry Ticket into 200 pcs. of Yggdrasil Berry and/or vice versa.";
+	next;
+	menu "Exchange to Yggdrasil Berry",b_trade, "Exchange to Berry Ticket", t_trade, "",-;
+	mes "[Exchanger]";
+	mes "Very well, have a nice day.";
+	close;
+t_trade:
+	if ( countitem(607) < 200 ) goto t_fail;
+	delitem 607, 200;
+	mes "[Berry Exchanger]";
+	mes "Ok, here's Your ^0000FFBerry ticket^000000.";
+	getitem 7608, 1;
+	close;
+t_fail:
+	mes "[Berry Exchanger]";
+	mes "I'm terribly sorry, but you do not have enough Yggdrasil Berry for this ticket.";
+	next;
+	mes "[Berry Exchanger]";
+	mes "Please come back when you have the correct ammount.";
+	close;
+b_trade:
+	if ( countitem(7608) < 1 ) goto b_fail;
+	if ( !checkweight(607,200) ) goto b_OverWeight; 
+	delitem 7608,1;
+	mes "[Exchanger]";
+	mes "Ok, here's Your ^0000FF200 pcs. Yggdrasil Berry^000000.";
+	getitem 607,200;
+	close;
+b_fail:
+	mes "[Berry Exchanger]";
+	mes "It seems you don't have that Berry Ticket.";
+	close;
+b_OverWeight:
+	mes "[Berry Exchanger]";
+	mes "It seems you are overweight.";
+	close;
+}
+
+//duplicates
+prontera,148,186,6	duplicate(Exchanger)	Berry Exchanger#pront	4_F_JPNCHIBI
+alberta,31,240,4	duplicate(Exchanger)	Berry Exchanger#alb	4_F_JPNCHIBI
+aldebaran,135,122,4	duplicate(Exchanger)	Berry Exchanger#alde	4_F_JPNCHIBI
+amatsu,203,84,4	duplicate(Exchanger)	Berry Exchanger#ama	4_F_JPNCHIBI
+ayothaya,211,162,6	duplicate(Exchanger)	Berry Exchanger#ayo	4_F_JPNCHIBI
+comodo,198,149,4	duplicate(Exchanger)	Berry Exchanger#com	4_F_JPNCHIBI
+einbech,183,118,6	duplicate(Exchanger)	Berry Exchanger#einbe	4_F_JPNCHIBI
+einbroch,59,200,4	duplicate(Exchanger)	Berry Exchanger#einbr	4_F_JPNCHIBI
+gef_fild10,71,335,4	duplicate(Exchanger)	Berry Exchanger#orc	4_F_JPNCHIBI
+geffen,124,69,4	duplicate(Exchanger)	Berry Exchanger#gef	4_F_JPNCHIBI
+glast_01,369,308,4	duplicate(Exchanger)	Berry Exchanger#glh	4_F_JPNCHIBI
+gonryun,157,126,4	duplicate(Exchanger)	Berry Exchanger#gon	4_F_JPNCHIBI
+hugel,101,148,4	duplicate(Exchanger)	Berry Exchanger#hug	4_F_JPNCHIBI
+izlude,123,120,4	duplicate(Exchanger)	Berry Exchanger#izl	4_F_JPNCHIBI
+jawaii,254,131,4	duplicate(Exchanger)	Berry Exchanger#jaw	4_F_JPNCHIBI
+lighthalzen,163,86,4	duplicate(Exchanger)	Berry Exchanger#lhz	4_F_JPNCHIBI
+louyang,212,106,6	duplicate(Exchanger)	Berry Exchanger#lou	4_F_JPNCHIBI
+manuk,274,149,6	duplicate(Exchanger)	Berry Exchanger#man	4_F_JPNCHIBI
+mid_camp,218,286,4	duplicate(Exchanger)	Berry Exchanger#mid	4_F_JPNCHIBI
+moc_ruins,69,164,4	duplicate(Exchanger)	Berry Exchanger#moc	4_F_JPNCHIBI
+morocc,149,103,4	duplicate(Exchanger)	Berry Exchanger#mor	4_F_JPNCHIBI
+moscovia,226,191,4	duplicate(Exchanger)	Berry Exchanger#mos	4_F_JPNCHIBI
+niflheim,212,185,4	duplicate(Exchanger)	Berry Exchanger#nif	4_F_JPNCHIBI
+pay_arche,55,126,6	duplicate(Exchanger)	Berry Exchanger#arc	4_F_JPNCHIBI
+payon,179,111,4	duplicate(Exchanger)	Berry Exchanger#pay	4_F_JPNCHIBI
+rachel,129,116,4	duplicate(Exchanger)	Berry Exchanger#rac	4_F_JPNCHIBI
+umbala,102,149,3	duplicate(Exchanger)	Berry Exchanger#umb	4_F_JPNCHIBI
+veins,214,123,4	duplicate(Exchanger)	Berry Exchanger#ve	4_F_JPNCHIBI
+xmas,145,134,6	duplicate(Exchanger)	Berry Exchanger#xmas	4_F_JPNCHIBI
+yuno,160,44,4	duplicate(Exchanger)	Berry Exchanger#yuno	4_F_JPNCHIBI
+
+

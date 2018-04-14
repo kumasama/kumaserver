@@ -1,0 +1,12 @@
+//---Entrance
+
+prontera,164,170,4	script	Quest Warper	1_M_BARD,{
+
+	mes "[ ^990099Ivan^000000 ]";
+	mes "Hello there ^990099 "+strcharinfo(0)+"!^000000";
+	next;
+	mes "[ ^990099Ivan^000000 ]";
+	mes "Would you like to ^FF0000Enter^000000 Fishing Area.?";
+	menu "Ok",-,"No thanks.",L_No;
+warp "brasilis" ,292,78;
+close;

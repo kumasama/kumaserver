@@ -1,0 +1,31 @@
+-	script	change_char_sex#CMD	-1,{
+	
+	OnInit:
+		bindatcmd "changegender", strnpcinfo(0)+"::OnAtcommand";
+		end;
+	
+	OnAtcommand:
+		mes "Hello ^FF0000 " + strcharinfo(0) + "^000000!";
+		mes "Do you want to change your gender?";
+		if(select("Yes:No") == 1) {
+			next;
+			query_sql "SELECT `char_id`, `sex` FROM `char` WHERE `name`='"+ strcharinfo(0) +"'",.@charid,.@char_sex$;
+			if(.@char_sex$ == "F") {
+				set .@char_sex2$, "Female";
+				set .@char_sex3$, "M";
+			} else {
+				set .@char_sex2$, "Male";
+				set .@char_sex3$, "F";
+			}
+			if(Class == 4021 || Class == 4020) set .@class, (Class == 4021)?4020:4021;
+			else set .@class, Class;
+			mes "^FF0000" + strcharinfo(0) + "^000000, your current gender is ^FF8E00" + .@char_sex2$ + "^000000. Do you wish to proceed in changing your gender?";
+			if(select("Yes:No") == 1) {
+				mes "Please wait for a moment, while we complete your request";
+				close2;
+				query_sql "UPDATE `char` SET `class`= '" + .@class + "', `sex`='"+ .@char_sex3$ + "' WHERE `char_id`=" + .@charid;
+				atcommand("@kick "+strcharinfo(0));
+			}
+		}
+		end;
+}
