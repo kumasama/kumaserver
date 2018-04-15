@@ -1,31 +1,16 @@
-//===== Hercules Script ======================================
-//= Find the Mushroom
-//===== By: ==================================================
-//= Mysterious
-//===== Current Version: =====================================
-//= 3.6a
-//===== Description: =========================================
-//= Find the Mushroom - random amount of Mushrooms spawns in random maps.
-//= Players need to find these mushrooms and kill them to gain prizes!
-//===== Additional Comments: =================================
-//= 3.0 Fully Functional with Rewritten script. [Mysterious]
-//= 3.6a Slightly edited. [Euphy]
-//============================================================
-
 prontera,129,192,6	script	Soccer Ball	SOCCER_BALL,{
-	mes "[ Find The Soccer Ball ]";
+	mes "[ Soccer Ball ]";
 	if (!.status)
 		mes "There is no event at the moment!";
 	else {
-		mes "There are "+.Spawn+" Mushrooms left in "+.Map$+"!";
-		mes "Find and kill the mushrooms to gain "+getitemname(.Prize)+"!";
+		mes "The soccer ball is still alive. Go find and destroy it, and take the reward!";
 	}
 	if (.status || getgmlevel() < .GM) close;
 	mes "Start the event?";
 	next;
 	if(select("- No", "- Yes") == 1) close;
 	donpcevent strnpcinfo(NPC_NAME)+"::OnMinute10";
-	mes "[ Find The Mushroom ]";
+	mes "[ Soccer Ball ]";
 	mes "Event started!";
 	close;
 
@@ -33,27 +18,26 @@ OnInit:
 	set .Prize,7227;	// Reward item ID
 	set .Amount,1;	// Reward item amount
 	set .GM,60;	// GM level required to access NPC
-	setarray .maps$[0],"izlude","geffen","morocc","prontera"; // Possible maps
+	set .Map$, "prontera";
 	end;
 
 OnMinute10:	// Start time (every hour)
 	if (.status) end;
 	set .status,1;
 	set .Spawn,rand(1,1);	// How many Soccer Ball should spawn?
-	set .Map$,.maps$[rand(getarraysize(.maps$))];
 	killmonster .Map$,"All";
-	monster .Map$,0,0,"Soccer Ball",1084,.Spawn,strnpcinfo(NPC_NAME)+"::OnMobKilled";
+	monster .Map$,152,179,"Soccer Ball",1792,.Spawn,strnpcinfo(NPC_NAME)+"::OnMobKilled";
 	announce "Find the Soccer Ball : Total of "+.Spawn+" Soccer Ball have been spawned in "+.Map$+"!",0;
 	sleep 2500;
-	announce "Find the Soccer Ball : Every Soccer Ball you kill will give you "+getitemname(.Prize)+"!",0;
+	announce "Find the Soccer Ball : The Soccer Ball you kill will give you 1 "+getitemname(.Prize)+"!",0;
 	end;
 
 OnMobKilled:
 	set .Spawn, .Spawn - 1;
 	getitem .Prize, .Amount;
-	if (.Spawn) announce "[ "+strcharinfo(PC_NAME)+" ] has killed a Mushroom. There are now "+.Spawn+" Soccer(s) left.",bc_map;
+	if (.Spawn) {announce "[ "+strcharinfo(PC_NAME) +" ] has killed the soccerball.",bc_all;}
 	else {
-		announce "The Find the Soccer Ball Event has ended. All the Soccer Ball have been killed.",0;
+		announce "The Find the Soccer Ball Event has ended. The Soccer Ball have been killed.",0;
 		set .status,0;
 	}
 	end;

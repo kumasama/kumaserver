@@ -1,4 +1,4 @@
-prontera,147,167,6	script	Century RO Freebies	403,{
+prontera,147,167,6	script	Century RO Freebies	4_F_OPERATION,{
 
 	if(#freebies == 1 && getgmlevel()<99) goto F_1;
 	mes "[Freebies]"; 
