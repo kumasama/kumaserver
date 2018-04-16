@@ -15,26 +15,26 @@ prontera,129,192,6	script	Soccer Ball	SOCCER_BALL,{
 	close;
 
 OnInit:
-	set .Prize,7227;	// Reward item ID
+	set .prize,7227;	// Reward item ID
 	set .Amount,1;	// Reward item amount
 	set .GM,60;	// GM level required to access NPC
-	set .Map$, "prontera";
+	set .map$, "prontera";
 	end;
 
 OnMinute10:	// Start time (every hour)
 	if (.status) end;
 	set .status,1;
 	set .Spawn,rand(1,1);	// How many Soccer Ball should spawn?
-	killmonster .Map$,"All";
-	monster .Map$,152,179,"Soccer Ball",1792,.Spawn,strnpcinfo(NPC_NAME)+"::OnMobKilled";
-	announce "Find the Soccer Ball : Total of "+.Spawn+" Soccer Ball have been spawned in "+.Map$+"!",0;
+	killmonster .map$,"All";
+	monster .map$,0,0,"Soccer Ball",1792,.Spawn,strnpcinfo(NPC_NAME)+"::OnMobKilled";
+	announce "Find the Soccer Ball : Total of "+.Spawn+" Soccer Ball have been spawned in "+.map$+"!",0;
 	sleep 2500;
-	announce "Find the Soccer Ball : The Soccer Ball you kill will give you 1 "+getitemname(.Prize)+"!",0;
+	announce "Find the Soccer Ball : The Soccer Ball you kill will give you 1 "+getitemname(.prize)+"!",0;
 	end;
 
 OnMobKilled:
 	set .Spawn, .Spawn - 1;
-	getitem .Prize, .Amount;
+	getitem .prize, .Amount;
 	if (.Spawn) {announce "[ "+strcharinfo(PC_NAME) +" ] has killed the soccerball.",bc_all;}
 	else {
 		announce "The Find the Soccer Ball Event has ended. The Soccer Ball have been killed.",0;

@@ -75,15 +75,36 @@ prontera,147,167,6	script	Century RO Freebies	4_F_OPERATION,{
 			break;
 	}
 	next;
+	mes "[Freebies]";
+	mes "Please select your one god item for your character";
+	switch(select("Lord Kaho's Horn:Sleipnir:Asprika:Megingjard:Brisingamen:Brynhildr:Foot Ring")) {
+		case 1:
+			set .@item, 5013;
+			break; 
+		case 2:
+			set .@item, 2410;
+			break; 
+		case 3:
+			set .@item, 2541;
+			break; 
+		case 4:
+			set .@item, 2629;
+			break; 
+		case 5:
+			set .@item, 2630;
+			break; 
+		case 6:
+			set .@item, 2383;
+			break; 
+		case 7:
+			set .@item, 2737; 
+	} 
+	next;
 	mes "Job Class: ^ff0000" + .@job$ + "^000000";
-	mes "Do you want to proceed with your choice?";
+	mes "God Item: ^ff0000" + getitemname(.@item) + "^000000";
+	mes "Do you want to proceed with your choices?";
 	if(select("Yes:No") == 1) {
-		getitembound 2357,1,1;
-		getitembound 2524,1,1;
-		getitembound 2421,1,1;
-		getitembound 2115,1,1;
-		getitembound 4047,1,1;
-		getitembound 4174,1,1;
+		getitembound .@item, 1, 1;
 		jobchange(.@job);
 		statusup2(bStr, 300);
 		statusup2(bAgi, 300);
@@ -96,7 +117,7 @@ prontera,147,167,6	script	Century RO Freebies	4_F_OPERATION,{
 		set JobLevel, 120;
 		atcommand("@allskill");		
 		emotion e_thx;
-		set #kuma_freebies,1;
+		set #freebies,1;
 	}
 
 	 /** Edit Freebies Items Here **/

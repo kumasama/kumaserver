@@ -1,0 +1,215 @@
+prontera,129,204,5	script	Fabre Punch Event	4_M_MOC_SOLDIER,{
+	doevent "fabre_punch_main::OnTalk";
+}
+
+pvp_n_1-2,100,100,5	script	Fabre Punch Ranking	4_M_MOC_SOLDIER,{
+	doevent "fabre_punch_main::OnViewRank";
+}
+
+
+
+-	script	fabre_punch_main	-1,{
+	
+	OnInit:
+		.map$ = "pvp_n_1-2";
+		
+		.npc_name$ = strnpcinfo(3);
+		setmapflag .map$, mf_noskill;
+		setmapflag .map$, mf_nodrop;
+		setmapflag .map$, mf_nomobloot;
+		setmapflag .map$, mf_nomvploot;
+		setmapflag .map$, mf_nosave;
+		setmapflag .map$, mf_noteleport;
+		setmapflag .map$, mf_nowarpto;
+		setmapflag .map$, mf_nobranch;
+
+		set .multiplier, 1;
+		set .prize, 7227;
+		set .prize_amt, 1;
+	
+		mapwarp .map$, "prontera",155,181;
+		end;
+		
+	OnViewRank:
+		switch ( select( 
+			"My Current Score",
+			"Top List Puncher",
+			"Nevermind"
+		)) {
+			case 1:
+				query_sql( "SELECT `point` FROM `e_fabre_punch_rank` WHERE `cid` = "+getcharid(0)+" LIMIT 1",.@current_score );
+				mes "My Current Score: " + .@current_score;
+				break;
+			case 2:
+				query_sql( "SELECT `name`,`point` FROM `e_fabre_punch_rank` ORDER BY `point` DESC LIMIT 10",.@name$,.@point );
+				.@size = getarraysize( .@name$ );
+				mes "Ranking";
+				for ( .@i = 0; .@i < .@size; .@i++ ) {
+					mes .@name$[.@i] +" - "+.@point[.@i]+" Point";
+				}
+				break;
+			default:
+				break;
+		}
+		close;
+		
+	OnTalk:
+		.@cid = getcharid(0);
+		.@is_gm = ( getgmlevel() > 0 );
+		
+		switch ( select( 
+			"Join Event",
+			"Get Reward",
+			( .@is_gm && !.status ) ? "[GM] Start Event" : "",
+			( .@is_gm && .status == 1 ) ? "[GM] Stop Event" : "",
+			"Nevermind"
+		)) {
+			case 1:
+				if (checkmount()) {
+					mes "No mounts allowed in this floor!";
+					break;
+				}
+				switch ( .status ) {
+					case 1:
+						warp .map$,0,0;
+						break;
+					case 2:
+						mes "Too late, event started.";
+						break;
+					case 3:
+						mes "Event ending, try again next time.";
+						break;
+					default: 
+						mes "Event isn't running, try again next time.";
+						break;
+				}
+				break;
+			case 2:
+				query_sql( "SELECT `rank` FROM `e_fabre_punch_rank` WHERE `cid` = "+.@cid+" LIMIT 1",.@rank );
+				switch ( .@rank ) {
+					case 1: // top 1
+						query_sql( "UPDATE `e_fabre_punch_rank` SET `rank` = 0 WHERE `cid` = "+.@cid+" LIMIT 1" );
+						// rewards
+						getitem .prize, .prize_amt;
+						mes "You gained rewards";
+						break;
+					default:
+						mes "No reward.";
+						break;
+				}
+				break;
+			case 3:
+				mes "Event will be starting soon.";
+				close2;
+				donpcevent .npc_name$+"::OnStart";
+				end;
+			case 4:
+				mes "Event will be ended soon.";
+				close2;
+				donpcevent .npc_name$+"::OnEnd";
+				end;
+			default:
+				break;
+		}
+		close;
+		
+	OnHour0200:
+	OnHour0400:
+	OnHour0800:
+	OnHour1000:
+	OnHour1400:
+	OnHour1600:
+	OnHour2000:
+	OnHour2200:
+	OnStart:
+		if ( !.status ) {
+			.status = 1;
+			query_sql( "TRUNCATE `e_fabre_punch_rank`" );
+			for ( .@i = 1; .@i > 0 && .status == 1; .@i-- ) {
+				announce "<Fabre Punch Event> Start in "+.@i+" minute(s).",bc_all;
+				sleep 60000;
+			}
+
+			announce "<Fabre Punch Event> Started.",bc_all;
+
+			for ( .@i = 5; .@i > 0 && .status == 1; .@i-- ) {
+				mapannounce .map$,"<Fabre Punch Event> Start in "+.@i+" second(s).",bc_all;
+				sleep 1000;
+			}
+
+			monster("pvp_n_1-2",0,0, "1 Point", 1007, 50, "fabre_punch_main::OnKill_1");
+			monster("pvp_n_1-2",0,0, "10 Point", 1007, 2, "fabre_punch_main::OnKill_2");
+			monster("pvp_n_1-2",0,0, "-20 Point", 1007, 48, "fabre_punch_main::OnKill_3");
+			
+			if ( .status == 1 ) {
+				set .multiplier, 1;
+				.status = 2;
+				for ( .@i = 5; .@i > 0; .@i-- ) {
+					mapannounce .map$,"<Fabre Punch Event> Time Left "+.@i+" Minute(s).",bc_all;
+					if(.@i == 1) {
+						set .multiplier, 2;
+						mapannounce .map$, "<Fabre Punch Event> Double Time! Time for 2x Points!", bc_all;
+					}
+					sleep ( 60000 );
+				}
+				query_sql( "SELECT `cid`,`name`,`point` FROM `e_fabre_punch_rank` WHERE `point` > 0 ORDER BY `point` DESC LIMIT 1",.@cid,.@name$,.@point );
+				query_sql( "UPDATE `e_fabre_punch_rank` SET `rank` = "+ 1 +" WHERE `cid` = "+.@cid +" LIMIT 1" );
+
+				mapannounce .map$,"<Fabre Punch Event> Winner - '"+.@name$ +"' with "+.@point[.@i]+" Points.",bc_all;
+				.status = 0;
+				
+				sleep 5000;
+				mapwarp .map$, "prontera",155,181;
+			}
+		}
+		end;
+		
+	OnEnd:
+		if ( .status == 2 )
+			awake .npc_name$;
+		end;
+		
+	OnKill_1:
+		monster("pvp_n_1-2",0,0, "1 Point", 1007, 1, "fabre_punch_main::OnKill_1");
+		if(getequipid(3) > 0 || getequipid(4) > 0) {
+			dispbottom "<Fabre Punch Event> Weapons not allowed!";
+			mapwarp .map$, "prontera",155,181;
+		}
+		else callsub( L_Point, .multiplier * 1 ); // Fabre = 1 Point
+		
+		end;
+		
+	OnKill_2:
+		monster("pvp_n_1-2",0,0, "10 Point", 1007, 1, "fabre_punch_main::OnKill_2");
+		if(getequipid(3) > 0 || getequipid(4) > 0) {
+			dispbottom "<Fabre Punch Event> Weapons not allowed!";
+			mapwarp .map$, "prontera",155,181;
+		} else {
+			callsub( L_Point, .multiplier * 10); // Pupa = 10 Point
+		}
+		end;
+		
+	OnKill_3:
+		monster("pvp_n_1-2",0,0, "-20 Point", 1007, 1, "fabre_punch_main::OnKill_3");
+		if(getequipid(3) > 0 || getequipid(4) > 0) {
+			dispbottom "<Fabre Punch Event> Weapons not allowed!";
+			mapwarp .map$, "prontera",155,181;
+		} else { 
+			callsub( L_Point, .multiplier * -20); // Poring = -20 Point
+			query_sql( "SELECT `point` FROM `e_fabre_punch_rank` WHERE `cid` = "+getcharid(0)+" LIMIT 1",.@current_score );
+			if(.@current_score < 0)
+			query_sql( "INSERT INTO `e_fabre_punch_rank` (`cid`, `name`, `point`) VALUES ( "+getcharid(0)+", '"+escape_sql( strcharinfo(0) )+"', "+.@value+" ) ON DUPLICATE KEY UPDATE `point` = " + 0 );
+		}
+		end;
+		
+	L_Point:
+		if ( .status == 2 ) {
+			.@value = getarg( 0,0 );
+			query_sql( "INSERT INTO `e_fabre_punch_rank` (`cid`, `name`, `point`) VALUES ( "+getcharid(0)+", '"+escape_sql( strcharinfo(0) )+"', "+.@value+" ) ON DUPLICATE KEY UPDATE `point` = `point` + "+.@value );
+			dispbottom "<Fabre Punch Event> Gained " + .@value + " Point.";
+		}
+		else if ( .status == 0 ) {
+			dispbottom "Event not yet start, please wait.";
+		}
+		return;
+}

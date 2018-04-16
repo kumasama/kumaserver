@@ -32,6 +32,9 @@
 //= Flags maps as part of zones defined in map_zone_db.txt
 //=========================================================================
 
+//Event
+quiz_01	mapflag	zone	Events
+
 //Aldebaran Turbo Track
 alde_tt02	mapflag	zone	Aldebaran Turbo Track
 turbo_n_1	mapflag	zone	Aldebaran Turbo Track

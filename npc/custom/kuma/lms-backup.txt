@@ -1,0 +1,163 @@
+prontera,164,152,4	script	Last Man Standing#2	4_CAT_DOWN,{
+	doevent "Request#2::OnMenu";
+	end;
+	
+OnActivate: // activated by the GM
+	if (agitcheck()) || (agitcheck2()){
+		mes .npc$;
+		mes "WoE is in progress.";
+		close;
+	}
+	if (.checkffa > 0) {
+		mes .npc$;
+		mes "Event is in progress.";
+		close;
+	}
+OnMinute00: // activated every hour
+	if (agitcheck()) || (agitcheck2()) end;
+	if (.checkffa > 0) end;
+	.checkffa = 1;
+	announce .npc$+": Registration for the event is now open for 3 minutes!",bc_all;
+	initnpctimer;
+	end;
+		OnTimer150000:
+			announce .npc$+": 30 seconds left before the registration will be closed.",bc_all;
+			end;
+			
+		OnTimer180000:
+			.checkffa = 2;
+			if ( .psize <= .maxwin) {
+				announce .npc$+": The Event has been cancelled! Not enough participants.",bc_all;
+				callsub Reset_evt_stats;
+				end;
+			}
+			announce .npc$+": Registration is now closed!",bc_all;
+			end;
+			
+		OnTimer185000:
+			mapannounce .pvpmap$,.npc$+": The Event will occur in a few moments!",bc_blue;
+			end;
+			
+		OnTimer187000:
+			mapannounce .pvpmap$,.npc$+": Get ready in 3!",bc_blue;
+			end;
+			
+		OnTimer188000:
+			mapannounce .pvpmap$,.npc$+": 2!",bc_blue;
+			end;
+			
+		OnTimer189000:
+			mapannounce .pvpmap$,.npc$+": 1!",bc_blue;
+			end;
+			
+		OnTimer190000:
+			stopnpctimer;
+			mapannounce .pvpmap$,.npc$+": Good luck everyone!",bc_blue;
+			setmapflag .pvpmap$, mf_pvp_noguild;
+			removemapflag .pvpmap$, mf_noskill;
+			pvpon .pvpmap$;
+			end;
+	
+OnMenu:
+	mes .npc$;
+	mes "Good day "+strcharinfo(0)+"!";
+	mes "How may I help you?";
+	next;
+	switch(select("Information:Join")){
+		case 1:
+			mes .npc$;
+			mes "Minimum Base Level: ^FF0000"+.minblvl+"^000000";
+			mes "Restricted Jobs:";
+			for( .@z = 0; .@z < .rjsize; .@z++ ) {
+				mes ( .@z +1 ) +". ^FF0000"+jobname (.resjob[.@z])+"^000000";
+			}
+			close;
+		case 2:
+			if (!.checkffa) {
+				mes .npc$;
+				mes "Event isn't activated, come back later.";
+				close;
+			}
+			if (.checkffa == 2) {
+				mes .npc$;
+				mes "Event is in progress, come back later.";
+				close;
+			}
+			if (BaseLevel < .minblvl) {
+				mes .npc$;
+				mes "You need to";
+				mes "have ^FF0000"+.minblvl+"^000000 Base level or more than";
+				mes "before you can participate.";
+				close;
+			}
+			for( .@z = 0; .@z < .rjsize; .@z++ ) {
+				if (Class == .resjob[.@z] ){
+					mes .npc$;
+					mes "Your job is restricted to join this event.";
+					close;
+				}
+			}
+			sc_end SC_ALL;
+			percentheal 100,100;
+			warp .pvpmap$,0,0;
+			.regaid[.psize] = getcharid(3);
+			.psize++;
+			end;
+	}
+	
+OnPCDieEvent:
+OnPCLogoutEvent:
+	if (strcharinfo(3) != .pvpmap$) end;
+	while (.regaid != getcharid(3) && .@i < .psize) .@i++;
+	deletearray .regaid[.@i],1;
+	.psize--;
+	if (.psize > .maxwin) end;
+	if (.checkffa > 0) {
+		announce .npc$+": The Event is now over! We already have our winners!",bc_all;
+			for (.@i = 0; .@i < .psize; ++.@i){
+				getitem .ritem,.rcount,.regaid[.@i];
+			}
+	}
+	callsub Reset_evt_stats;
+	end;
+	
+Reset_evt_stats:
+	removemapflag .pvpmap$, mf_pvp_noguild;
+	setmapflag .pvpmap$, mf_noskill;
+	pvpoff .pvpmap$;
+	.checkffa = 0;
+	deletearray .regaid;
+	.psize = 0;
+	mapwarp .pvpmap$,.extmap$,.extx,.exty,0;
+	end;
+	
+OnInit:
+	bindatcmd "ffa",strnpcinfo(3)+"::OnActivate",99,99;
+	
+// CONFIGURATION
+	.npc$ = "[ Free for All ]"; // NPC name
+	.pvpmap$ = "pvp_n_1-5"; // Set your FFA Map
+	.minblvl = 255; // Set minimum base level who can enter
+	.maxwin = 2; // Set the maximum winners
+	.ritem = 7227; // Set the item id of the reward
+		.rcount = 5; // Set reward amount
+	.extmap$ = "prontera"; // Set exit map
+		.extx = 150; // Exit map "x" coordinate
+		.exty = 150; // Exit map "y" coordinate
+	setarray .resjob[0], 0,4001; // This list serves as the restricted jobs
+		.rjsize = getarraysize (.resjob); // DO NOT TOUCH THIS
+		
+// MAPFLAGS
+	setmapflag .pvpmap$, mf_noskill;
+	pvpoff .pvpmap$;
+//---
+	setmapflag .pvpmap$, mf_nowarpto;
+	setmapflag .pvpmap$, mf_nocommand;
+	setmapflag .pvpmap$, mf_nowarp;
+	setmapflag .pvpmap$, mf_nosave;
+	setmapflag .pvpmap$, mf_noteleport;
+	setmapflag .pvpmap$, mf_nomemo;
+	setmapflag .pvpmap$, mf_novending;
+	setmapflag .pvpmap$, mf_nobranch;
+	end;
+}

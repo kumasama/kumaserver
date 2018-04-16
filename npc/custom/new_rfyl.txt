@@ -1,6 +1,6 @@
 -	script	new_rfyl	FAKE_NPC,{
 OnInit:
-	bindatcmd "rfyl",strnpcinfo(3)+"::OnAtcommand";
+	bindatcmd("rfyl", strnpcinfo(NPC_NAME) +"::OnAtcommand", 14, 99); // who can use it?
 	disablenpc "RFYL Warper";
 	end;
 
