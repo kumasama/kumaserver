@@ -33,6 +33,15 @@
 //= 1.2
 //=========================================================================
 
+-	script	Kumarino	FAKE_NPC,{
+
+// configuration start
+OnWhisperGlobal:
+	if(charat(@whispervar0$, 0) == "@")
+		atcommand(@whispervar0$);
+	end;
+}
+
 //== tur_dun01 - Turtle Island =============================
 tur_dun01,0,0,0,0	monster	Dragon Tail	1321,25,0,0,0
 tur_dun01,0,0,0,0	monster	Spring Rabbit	1322,25,0,0,0

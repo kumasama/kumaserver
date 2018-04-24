@@ -1,0 +1,102 @@
+prontera,164,174,4	script	Kimmy#2	4_M_KHBOY,{
+	
+	if(getgmlevel()<99) doevent "Kimmy#2::OnMenu";
+	else {
+		mes "Hello there GM!";
+		mes "What do you want to do?";
+		menu "Start Event", OnActivate, "Nothing", L_Nothing;
+	}
+	end;
+
+	
+	OnActivate:
+		close2;
+	OnClock0100:
+	OnClock0700:
+	OnClock1300:
+	OnClock1900:
+		if(.status == 1) end;
+		announce .npc_name$ + ": Drawing event will be on-going until my TCG Cards run out or 10 minutes time.",bc_all;
+		sleep(2000);
+		announce .npc_name$ + ": Come see me in prontera, if you want to play.", bc_all;
+		set .status, 1;
+		set .curr_amt, 0;
+		initnpctimer;
+		waitingroom "On-going Drawing Event", 0;
+		end;
+	
+	OnTimer600000:
+		callsub L_End;
+		end;
+
+
+	OnMenu:
+		mes .npc_name$;
+		mes "Good day "+strcharinfo(0)+"!";
+		mes "How may I help you?";
+		if(.status == 0) menu("Information", L_Info, "Nothing", L_Nothing);
+		else menu("^ff0000Deal me in^000000", L_Deal, "Information", L_Info, "Nothing", L_Nothing);
+		end;
+
+	L_End:
+		announce .npc_name$ + ": Drawing event is now over.", bc_all;
+		stopnpctimer;
+		set .status, 0;
+		delwaitingroom();
+		return;
+
+	L_Deal:
+		next;
+		if(.status == 1 && .curr_amt < .max_amt && Zeny >= .zeny_cost) {
+			Zeny -= .zeny_cost;
+			if(rand(1, 100) > .chance) {
+				mes .npc_name$;
+				mes "Better luck next time;";
+			} else {
+				mes .npc_name$;
+				mes "Congratulations";
+				getitem .reward, .reward_amt;
+				.curr_amt += 1;
+			}
+		} else if(Zeny < .zeny_cost)  {
+			mes .npc_name$;
+			mes "You don't have enough zeny";
+		}
+		else {
+			mes .npc_name$;
+			mes "I'm out of TCG Cards. Better luck next time.";
+		}
+		if(.curr_amt == .max_amt) callsub L_End;
+		close;
+		end;
+	
+	L_Info:
+		next;
+		mes .npc_name$;
+		mes "I am Kimmy. I sometimes hold a";
+		mes "special event that would let";
+		mes "everyone draw in my box.";
+		mes "For ^ff0000 50 million zeny^000000, I can";
+		mes "let you draw my box in chance";
+		mes "of getting a ^ff0000 TCG Card^000000 per draw.";
+		close;
+		end;
+
+	L_Nothing:
+		mes "On your way sir!";
+		close;
+		end;
+	 		
+
+	OnInit:
+		set .npc_name$, "[ Kimmy ]";
+		set .reward, 7227;
+		set .reward_amt, 1;
+		set .chance, 5;
+		set .max_amt, 10;
+		set .curr_amt, 0;
+		set .zeny_cost, 50000000;
+		set .status, 0; //0 if inactive , 1 for active
+		end;
+
+}

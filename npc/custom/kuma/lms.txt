@@ -13,19 +13,19 @@ OnActivate: // activated by the GM
 		mes "Event is in progress.";
 		close;
 	}
-OnHour0000:
-OnHour0300:
-OnHour0600:
-OnHour0900:
-OnHour1200:
-OnHour1500:
-OnHour1800:
-OnHour2100:
+OnClock0000:
+OnClock0300:
+OnClock0600:
+OnClock0900:
+OnClock1200:
+OnClock1500:
+OnClock1800:
+OnClock2100:
 	 // activated every hour
 	if (agitcheck()) || (agitcheck2()) end;
 	if (.checkffa > 0) end;
 	.checkffa = 1;
-	announce .npc$+": Registration for the event is now open for 3 minutes!",bc_all;
+	announce .npc$+": Registration for the event [Free For All] is now open for 3 minutes!",bc_all;
 	initnpctimer;
 	end;
 		OnTimer150000:
@@ -35,13 +35,13 @@ OnHour2100:
 		OnTimer180000:
 			.checkffa = 2;
 			if ( .psize < .maxwin) {
-				announce .npc$+": The Event has been cancelled! Not enough participants.",bc_all;
+				announce .npc$+": The event [Free For All] has been cancelled! Not enough participants.",bc_all;
 				callsub Reset_evt_stats;
 				end;
 			} else if (.psize == 1) {
 				announce .npc$+": Registration is now closed!",bc_all;
 				sleep2(10000);
-				announce .npc$+": The Event is now over! We already have a winner!",bc_all;
+				announce .npc$+": The event [Free For All] is now over! We already have a winner!",bc_all;
 				for (.@i = 0; .@i < .psize; ++.@i){
 					getitem .ritem,.rcount,.regaid[.@i];
 				}
@@ -51,7 +51,7 @@ OnHour2100:
 			end;
 			
 		OnTimer185000:
-			mapannounce .pvpmap$,.npc$+": The Event will occur in a few moments!",bc_blue;
+			mapannounce .pvpmap$,.npc$+": The event [Free For All] will occur in a few moments!",bc_blue;
 			end;
 			
 		OnTimer187000:
@@ -70,6 +70,7 @@ OnHour2100:
 			stopnpctimer;
 			mapannounce .pvpmap$,.npc$+": Good luck everyone!",bc_blue;
 			setmapflag .pvpmap$, mf_pvp_noguild;
+			setmapflag .pvpmap$, mf_gvg;
 			removemapflag .pvpmap$, mf_noskill;
 			pvpon .pvpmap$;
 			end;
@@ -128,8 +129,10 @@ OnPCLogoutEvent:
 	deletearray .regaid[.@i],1;
 	.psize--;
 	if (.psize > .maxwin) end;
+	if(.checkffa == 1) end;
 	if (.checkffa > 0) {
-		announce .npc$+": The Event is now over! We already have a winner!",bc_all;
+		announce .npc$+": The event [Free For All] is now over! We already have a winner!",bc_all;
+		sleep2(3000);
 			for (.@i = 0; .@i < .psize; ++.@i){
 				getitem .ritem,.rcount,.regaid[.@i];
 			}
@@ -139,6 +142,7 @@ OnPCLogoutEvent:
 	
 Reset_evt_stats:
 	removemapflag .pvpmap$, mf_pvp_noguild;
+	removemapflag .pvpmap$, mf_gvg;
 	setmapflag .pvpmap$, mf_noskill;
 	pvpoff .pvpmap$;
 	.checkffa = 0;
@@ -152,7 +156,7 @@ OnInit:
 	
 // CONFIGURATION
 	.npc$ = "[ Warchief ]"; // NPC name
-	.pvpmap$ = "pvp_n_1-5"; // Set your FFA Map
+	.pvpmap$ = "guild_vs5"; // Set your FFA Map
 	.minblvl = 255; // Set minimum base level who can enter
 	.maxwin = 1; // Set the maximum winners
 	.ritem = 7227; // Set the item id of the reward

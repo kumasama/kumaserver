@@ -1,0 +1,75 @@
+//####################################################
+//#   						   ?#
+//#   ####### ######  ###   ### ###   ### ###   ###  #
+//#   ###    ###  ###  ### ###   ### ###   ### ###   #
+//#   #####  ###  ###   ####      ####      #####    #
+//#   ##     ###  ###  ### ###   ### ###     ###     #
+//#   ##      ######  ###   ### ###   ###   ###      #
+//#                                                  #
+//####################################################
+//v1.0: Allows changing suits to 3rd classes;        #
+//v1.1: Added Xmas and Summer suits;                 #
+//v1.2: Added support to baby 3rd class suits.       #
+//####################################################
+prontera,136,170,3	script	Class Suits	1_F_PUBGIRL,{
+
+	mes "[Suit Provider]";
+	mes "So, wanna change your appearance?";
+	menu "Change to 3rd class suit",thirdclass,"Reset appearance",reset;
+	end;
+
+thirdclass:
+	set .@base, 0;
+	switch(Class) {
+		case Job_Lord_Knight: if ( checkmount() ) { setoption Option_Dragon1; } set .@base, 4060; break;
+		case Job_Assassin_Cross: set .@base, 4065; break;
+		case Job_Paladin: set .@base, 4073; break;
+		case Job_Whitesmith: set .@base, 4064; break;
+		case Job_Creator: set .@base, 4078; break;
+		case Job_Stalker: set .@base, 4079; break;
+		case Job_Professor: set .@base, 4074; break;
+		case Job_Gypsy: set .@base, 4076; break;
+		case Job_Champion: set .@base, 4077; break; 
+		case Job_Sniper: set .@base, 4062; break;
+		case Job_Clown: set .@base, 4075; break;
+		case Job_High_Wizard: set .@base, 4061; break;
+		case Job_High_Priest: set .@base, 4063; break;
+		default:
+			next; mes "[Suit Provider]"; mes "I'm sorry, but your class is not supported.";
+
+	}
+	if(.@base > 0 ) {
+		changebase .@base;
+		set Char_Suit, 1;
+	}
+	close; 
+	end; 
+
+reset:
+	changebase Class;
+	set Char_Suit, 0;
+	close;
+	end;
+
+OnPCLoginEvent:
+	if(Char_Suit > 0) {
+		set .@base, 0;
+		switch(Class) {
+			case Job_Lord_Knight: if ( checkmount() ) { setoption Option_Dragon1; } set .@base, 4060; break;
+			case Job_Assassin_Cross: set .@base, 4065; break;
+			case Job_Paladin: set .@base, 4073; break;
+			case Job_Whitesmith: set .@base, 4064; break;
+			case Job_Creator: set .@base, 4078; break;
+			case Job_Stalker: set .@base, 4079; break;
+			case Job_Professor: set .@base, 4074; break;
+			case Job_Gypsy: set .@base, 4076; break;
+			case Job_Champion: set .@base, 4077; break; 
+			case Job_Sniper: set .@base, 4062; break;
+			case Job_Clown: set .@base, 4075; break;
+			case Job_High_Wizard: set .@base, 4061; break;
+			case Job_High_Priest: set .@base, 4063; break;
+		}
+		changebase .@base;
+	}
+	end;
+}

@@ -50,3 +50,9 @@ pvp_n_8-4,0,0,0,0	monster	Ghoul	1036,3,360000,180000,1
 //== pvp_n_8-5 - PvP : Room Copass =========================
 pvp_n_8-5,0,0,0,0	monster	Khalitzburg	1132,1,360000,180000,1
 pvp_n_8-5,0,0,0,0	monster	Raydric	1163,2,360000,180000,1
+
+
+// CUSTOM
+prt_maze03,0,0,0,0	monster	Baphomet Jr.	1101,50,8578,50
+gl_cas02,0,0,0,0	monster	Wanderer	1208,30,8170,30
+

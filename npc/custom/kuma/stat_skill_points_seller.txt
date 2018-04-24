@@ -3,8 +3,6 @@ prontera,140,181,6	script	Linda	4_F_KAFRA7,{
 	// ----------------------
 	// - Core Code
 	// ----------------------
-	
-	cutin "kafra_07",2;
 	mes "[" + .colors$[1] + .npc_name$ + .colors$[0] + "]";
 	mes "Hello! My name is Linda, I work for the Kafra Services and my job is to sell status points & skill points.";
 	mes "1 Skill Point = "  +  .skill_cost;
@@ -76,6 +74,6 @@ prontera,140,181,6	script	Linda	4_F_KAFRA7,{
 			// Store NPC Name
 			set .npc_name$, "Linda";
 			setarray .colors$[0],"^000000", "^336699", "^550000", "^996633", "^666666", "^FFFF66", "^99CCCC";
-			set .stat_cost, 1000;
-			set .skill_cost, 10000;
+			set .stat_cost, 20000;
+			set .skill_cost, 1000000;
 }

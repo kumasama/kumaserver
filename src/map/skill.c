@@ -11454,6 +11454,36 @@ int skill_castend_pos2(struct block_list* src, int x, int y, uint16 skill_id, ui
 				}
 			}
 			break;
+		case HP_AUTOATTACK1:
+		case HP_AUTOATTACK2:
+		case HP_AUTOATTACK3:
+		case HP_AUTOATTACK4:
+			{
+				int summons[4] = { 1661, 1637, 1634, 1638 };
+				int class_ = 0;
+				if (skill_id == HP_AUTOATTACK1) { 
+					class_ = summons[0];
+				} else if(skill_id == HP_AUTOATTACK2)  {
+					class_ = summons[1];
+				} else if(skill_id == HP_AUTOATTACK3) { 
+					class_ = summons[2];
+				} else  {
+					class_ = summons[3];
+				}
+				struct mob_data *md;
+				// Correct info, don't change any of this! [celest]
+				md = mob->once_spawn_sub(src, src->m, x, y, clif->get_bl_name(src), class_, "", SZ_SMALL, AI_NONE);
+				if (md) {
+					md->master_id = src->id;
+					md->special_state.ai = AI_FLORA;
+					if( md->deletetimer != INVALID_TIMER )
+						timer->delete(md->deletetimer, mob->timer_delete);
+					md->deletetimer = timer->add(timer->gettick() + skill->get_time(skill_id,skill_lv), mob->timer_delete, md->bl.id, 0);
+					mob->spawn (md); //Now it is ready for spawning.
+
+				}
+			}
+			break;
 		/** ADDED BY KUMA **/
 		// Slim Pitcher [Celest]
 		case CR_SLIMPITCHER:
@@ -12074,7 +12104,7 @@ struct skill_unit_group* skill_unitsetting(struct block_list *src, uint16 skill_
 				return NULL;
 			if (map_flag_vs(src->m) && battle_config.vs_traps_bctall
 				&& (src->type&battle_config.vs_traps_bctall))
-				target = BCT_ALL;
+				target = BCT_ENEMY;
 			break;
 		case HT_ANKLESNARE:
 			if( flag&2 )
@@ -15126,6 +15156,36 @@ int skill_check_condition_castend(struct map_session_data* sd, uint16 skill_id, 
 				i = map->foreachinmap(skill->check_condition_mob_master_sub ,sd->bl.m, BL_MOB, sd->bl.id, mob_class, skill_id, &c);
 				if(c >= maxcount ||
 					(skill_id==NPC_AUTOATTACK && c != i && battle_config.summon_flora&2))	
+				{	//Fails when: exceed max limit. There are other plant types already out.
+					clif->skill_fail(sd,skill_id,USESKILL_FAIL_LEVEL,0);
+					return false;
+				}
+			}
+			break;
+		}
+		case HP_AUTOATTACK1:
+		case HP_AUTOATTACK2:
+		case HP_AUTOATTACK3:
+		case HP_AUTOATTACK4:
+		{
+			int c=0;
+			int summons[4] = { 1661, 1637, 1634, 1638 };
+			int mob_class = 0;
+			if (skill_id == HP_AUTOATTACK1)  {
+				mob_class = summons[0];
+			} else if(skill_id == HP_AUTOATTACK2) {
+				mob_class = summons[1];
+			} else if(skill_id == HP_AUTOATTACK3) {
+				mob_class = summons[2];
+			} else  {
+				mob_class = summons[3]; 
+			}
+			int maxcount = 4;
+
+			if(battle_config.land_skill_limit && maxcount>0 && (battle_config.land_skill_limit&BL_PC)) {
+				i = map->foreachinmap(skill->check_condition_mob_master_sub ,sd->bl.m, BL_MOB, sd->bl.id, mob_class, skill_id, &c);
+				if(c >= maxcount ||
+					((skill_id==HP_AUTOATTACK1 || skill_id==HP_AUTOATTACK2 || skill_id==HP_AUTOATTACK3 || skill_id==HP_AUTOATTACK4) && c != i && battle_config.summon_flora&2))	
 				{	//Fails when: exceed max limit. There are other plant types already out.
 					clif->skill_fail(sd,skill_id,USESKILL_FAIL_LEVEL,0);
 					return false;

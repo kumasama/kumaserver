@@ -26,7 +26,7 @@ pvp_n_1-2,100,100,5	script	Fabre Punch Ranking	4_M_MOC_SOLDIER,{
 		set .multiplier, 1;
 		set .prize, 7227;
 		set .prize_amt, 1;
-	
+
 		mapwarp .map$, "prontera",155,181;
 		end;
 		
@@ -71,6 +71,8 @@ pvp_n_1-2,100,100,5	script	Fabre Punch Ranking	4_M_MOC_SOLDIER,{
 				}
 				switch ( .status ) {
 					case 1:
+						unequip(3);
+						unequip(4);
 						warp .map$,0,0;
 						break;
 					case 2:
@@ -113,14 +115,14 @@ pvp_n_1-2,100,100,5	script	Fabre Punch Ranking	4_M_MOC_SOLDIER,{
 		}
 		close;
 		
-	OnHour0200:
-	OnHour0400:
-	OnHour0800:
-	OnHour1000:
-	OnHour1400:
-	OnHour1600:
-	OnHour2000:
-	OnHour2200:
+	OnClock0200:
+	OnClock0400:
+	OnClock0800:
+	OnClock1000:
+	OnClock1400:
+	OnClock1600:
+	OnClock2000:
+	OnClock2200:
 	OnStart:
 		if ( !.status ) {
 			.status = 1;
@@ -152,6 +154,9 @@ pvp_n_1-2,100,100,5	script	Fabre Punch Ranking	4_M_MOC_SOLDIER,{
 					}
 					sleep ( 60000 );
 				}
+
+				killmonsterall(.map$);
+				sleep(2000);
 				query_sql( "SELECT `cid`,`name`,`point` FROM `e_fabre_punch_rank` WHERE `point` > 0 ORDER BY `point` DESC LIMIT 1",.@cid,.@name$,.@point );
 				query_sql( "UPDATE `e_fabre_punch_rank` SET `rank` = "+ 1 +" WHERE `cid` = "+.@cid +" LIMIT 1" );
 
@@ -173,7 +178,7 @@ pvp_n_1-2,100,100,5	script	Fabre Punch Ranking	4_M_MOC_SOLDIER,{
 		monster("pvp_n_1-2",0,0, "1 Point", 1007, 1, "fabre_punch_main::OnKill_1");
 		if(getequipid(3) > 0 || getequipid(4) > 0) {
 			dispbottom "<Fabre Punch Event> Weapons not allowed!";
-			mapwarp .map$, "prontera",155,181;
+			warp "prontera",155,181;
 		}
 		else callsub( L_Point, .multiplier * 1 ); // Fabre = 1 Point
 		
@@ -183,7 +188,7 @@ pvp_n_1-2,100,100,5	script	Fabre Punch Ranking	4_M_MOC_SOLDIER,{
 		monster("pvp_n_1-2",0,0, "10 Point", 1007, 1, "fabre_punch_main::OnKill_2");
 		if(getequipid(3) > 0 || getequipid(4) > 0) {
 			dispbottom "<Fabre Punch Event> Weapons not allowed!";
-			mapwarp .map$, "prontera",155,181;
+			warp "prontera",155,181;
 		} else {
 			callsub( L_Point, .multiplier * 10); // Pupa = 10 Point
 		}
@@ -193,7 +198,7 @@ pvp_n_1-2,100,100,5	script	Fabre Punch Ranking	4_M_MOC_SOLDIER,{
 		monster("pvp_n_1-2",0,0, "-20 Point", 1007, 1, "fabre_punch_main::OnKill_3");
 		if(getequipid(3) > 0 || getequipid(4) > 0) {
 			dispbottom "<Fabre Punch Event> Weapons not allowed!";
-			mapwarp .map$, "prontera",155,181;
+			warp "prontera",155,181;
 		} else { 
 			callsub( L_Point, .multiplier * -20); // Poring = -20 Point
 			query_sql( "SELECT `point` FROM `e_fabre_punch_rank` WHERE `cid` = "+getcharid(0)+" LIMIT 1",.@current_score );

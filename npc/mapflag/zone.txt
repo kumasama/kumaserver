@@ -34,6 +34,7 @@
 
 //Event
 quiz_01	mapflag	zone	Events
+pvp_n_1-2	mapflag	zone	Events
 
 //Aldebaran Turbo Track
 alde_tt02	mapflag	zone	Aldebaran Turbo Track

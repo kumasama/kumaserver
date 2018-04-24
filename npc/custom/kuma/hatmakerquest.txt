@@ -106,8 +106,8 @@ waitingroom "Hat Maker",0;
 // Custom points, if needed: "<variable>","<name to display>"
 	setarray .Points$[0],"#CASHPOINTS","Cash Points";
 
-	set .Announce,1;	// Announce quest completion? (1: yes / 0: no)
-	set .ShowSlot,1;	// Show item slots? (2: all equipment / 1: if slots > 0 / 0: never)
+	set .Announce,0;	// Announce quest completion? (1: yes / 0: no)
+	set .ShowSlot,2;	// Show item slots? (2: all equipment / 1: if slots > 0 / 0: never)
 	set .DisplayID,0;	// Show item IDs? (1: yes / 0: no)
 	set .ShowZeny,0;	// Show Zeny cost, if any? (1: yes / 0: no)
 
@@ -122,6 +122,7 @@ waitingroom "Hat Maker",0;
 //     <required item ID>,<required item amount>{,...});
 // Shop number corresponds with order above (default is 1).
 // Note: Do NOT use a reward item more than once!
+	Add(1,2202,1,10000000,0,2201,1,732,10,949,50);
 	Add(1,5086,1,0,0,5024,1,539,30,660,3);
 	Add(1,5137,1,0,0,5141,5,7047,100,661,1);
 	Add(1,5074,1,20000,0,2286,1,2254,1);
@@ -172,7 +173,6 @@ waitingroom "Hat Maker",0;
 	Add(1,5075,1,0,0,2248,1,7030,108,7194,108,7120,4);
 	Add(1,5048,1,0,0,5041,1,999,10);
 	Add(1,5036,1,0,0,2608,1,7069,500);
-	Add(1,5135,1,0,0,2295,1,969,1,975,1,999,5);
 	Add(1,5181,1,0,0,7511,100,7340,200,7023,10);
 	Add(1,5108,1,5000,0,7301,1887,5114,1,611,10);
 	Add(1,5254,1,0,0,5132,1,5068,1,2255,1,7023,5,983,1);
@@ -282,7 +282,6 @@ waitingroom "Hat Maker",0;
 	Add(1,5400,1,0,0,1022,20,1234,2);
 	Add(1,5339,1,0,0,5100,1,7112,25,1558,1);
 	Add(1,5361,1,0,0,7216,200);
-	Add(1,5377,1,100000000,0,2268,1,1040,30,1629,1);
 	Add(1,5346,1,0,0,5100,1,7112,25,558,1);
 	Add(1,5433,1,0,0,5185,1,969,2);
 	sleep 10;

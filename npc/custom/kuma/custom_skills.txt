@@ -3,7 +3,9 @@
 	OnPCLoginEvent:
 		if(Class == 4010) skill 10020,1,0;
 		if(Class == 4009) { 
-			addtoskill(10021,1,0);
+			addtoskill(10022,1,0);
+			addtoskill(10023,1,0);
+			addtoskill(10024,1,0);
 		}
 		end;
 	

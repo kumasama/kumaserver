@@ -1,6 +1,6 @@
 prontera,147,167,6	script	Century RO Freebies	4_F_OPERATION,{
 
-	if(#freebies == 1 && getgmlevel()<99) goto F_1;
+	if(#cro_freebies == 1 && getgmlevel()<99) goto F_1;
 	mes "[Freebies]"; 
 	mes "Greetings! Welcome to Century Ragnarok Online...";
 	mes "I can provide you a one-time";
@@ -43,6 +43,7 @@ prontera,147,167,6	script	Century RO Freebies	4_F_OPERATION,{
 			set .@job$, "Champion";
 			break;
 		case 9: //Professor
+			set .@job, 4017;
 			set .@job$, "Professor";
 			break;
 		case 10: //Stalker
@@ -78,12 +79,6 @@ prontera,147,167,6	script	Century RO Freebies	4_F_OPERATION,{
 	mes "Job Class: ^ff0000" + .@job$ + "^000000";
 	mes "Do you want to proceed with your choice?";
 	if(select("Yes:No") == 1) {
-		getitembound 2357,1,1;
-		getitembound 2524,1,1;
-		getitembound 2421,1,1;
-		getitembound 2115,1,1;
-		getitembound 4047,1,1;
-		getitembound 4174,1,1;
 		jobchange(.@job);
 		statusup2(bStr, 300);
 		statusup2(bAgi, 300);
@@ -95,8 +90,17 @@ prontera,147,167,6	script	Century RO Freebies	4_F_OPERATION,{
 		set BaseLevel, 255;
 		set JobLevel, 120;
 		atcommand("@allskill");		
+		getitembound 12210,5,1;
+		getitembound 17019,1,1;
+		getitembound 17020,1,1;
+		getitembound 17021,2,1;
+		getitembound 17022,2,1;
+		getitembound 17023,1,1;
+		getitembound 17024,1,1;
+		getitembound 17025,1,1;
+		getitembound 17026,1,1;
 		emotion e_thx;
-		set #kuma_freebies,1;
+		set #cro_freebies,1;
 	}
 
 	 /** Edit Freebies Items Here **/
