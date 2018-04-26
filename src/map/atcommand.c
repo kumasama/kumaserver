@@ -5627,6 +5627,30 @@ ACMD(autotrade)
  * @changegm by durf (changed by Lupus)
  * Changes Master of your Guild to a specified guild member
  *------------------------------------------*/
+
+/** AFK ADDED BY KUMA 
+@afk --- Make the character AFk
+**/
+ACMD(afk){
+	nullpo_retr(-1, sd);
+	if (sd->vender_id) {
+		clif->message(fd, "You can't use this command while you're vending.");
+	}else if(sd->status.zeny >= 1) {           
+		sd->status.zeny += -1;           
+		sd->state.autotrade = 1;
+		if( battle_config.at_timeout ) {
+			int timeout = atoi(message);
+			status->change_start(NULL,&sd->bl, SC_AUTOTRADE, 10000, 0, 0, 0, 0,
+		                     ((timeout > 0) ? min(timeout,battle_config.at_timeout) : battle_config.at_timeout) * 60000, SCFLAG_NONE);
+		}
+		clif->authfail_fd(sd->fd, 15);   
+	} else {       
+		clif->message(fd, "You do not have enough money to use this command.");       
+		clif->message(fd, "@afk failed.");          
+	}
+	return true;
+}
+
 ACMD(changegm) {
 	struct guild *g;
 	struct map_session_data *pl_sd;
@@ -9909,6 +9933,7 @@ void atcommand_basecommands(void) {
 		ACMD_DEF(joinclan),
 		ACMD_DEF(leaveclan),
 		ACMD_DEF(reloadclans),
+		ACMD_DEF(afk)
 	};
 	int i;
 

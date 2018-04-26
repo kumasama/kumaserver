@@ -10615,7 +10615,7 @@ void clif_parse_WisMessage(int fd, struct map_session_data* sd)
 	}
 
 	// if player is autotrading
-	if (dstsd->state.autotrade) {
+	if (dstsd->state.autotrade && dstsd->vender_id) {
 		char output[256];
 		sprintf(output, "%s is in autotrade mode and cannot receive whispered messages.", dstsd->status.name);
 		clif->wis_message(fd, map->wisp_server_name, output, (int)strlen(output));
